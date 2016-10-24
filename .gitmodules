@@ -1,3 +1,6 @@
 [submodule "dep"]
 	path = dep
 	url = https://github.com/nodejs/http-parser.git
+[submodule "test/lest"]
+	path = test/lest
+	url = https://github.com/martinmoene/lest.git
