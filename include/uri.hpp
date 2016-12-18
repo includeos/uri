@@ -24,219 +24,263 @@
 
 namespace uri {
 
-  /**
-   * Representation of RFC 3986 URI's.
-   * Ref. https://tools.ietf.org/html/rfc3986
-   **/
-  class URI {
-  public:
-    /*
-     * Default constructor
-     */
-    explicit URI() = default;
+#ifdef URI_THROW_ON_ERROR
+#include <stdexcept>
 
-    /*
-     * Default copy and move constructors
-     */
-    URI(const URI&) = default;
-    URI(URI&&) = default;
+///
+/// This class is used to represent an error that occurred
+/// from within the operations of class URI
+///
+class URI_error : public std::runtime_error {
+public:
+    using runtime_error::runtime_error;
+}; //< class URI_error
 
-    /*
-     * Default destructor
-     */
-    ~URI() noexcept = default;
+#endif //< URI_THROW_ON_ERROR
 
-    /*
-     * Default assignment operators
-     */
-    URI& operator=(const URI&) = default;
-    URI& operator=(URI&&) = default;
+///
+/// Representation of RFC 3986 URI's.
+/// Ref. https://tools.ietf.org/html/rfc3986
+///
+class URI {
+public:
+  ///
+  /// Default constructor
+  ///
+  explicit URI() = default;
 
-    /**
-     * @brief Construct using a view into an existing string
-     *
-     * @param uri : A view into an existing string representing
-     * a uri
-     */
-    explicit URI(const std::experimental::string_view uri);
+  ///
+  /// Default copy constructor
+  ///
+  URI(const URI&) = default;
 
-    ///////////////////////////////////////////////
-    //----------RFC-specified URI parts----------//
-    ///////////////////////////////////////////////
+  ///
+  /// Default move constructor
+  ///
+  URI(URI&&) = default;
 
-    /**
-     * @brief Get scheme.
-     *
-     * E.g. 'http', 'file', 'ftp' etc.
-     *
-     * @return The scheme
-     */
-    std::experimental::string_view scheme() const noexcept;
+  ///
+  /// Default destructor
+  ///
+  ~URI() = default;
 
-    /**
-     * @brief Get userinfo.
-     *
-     * E.g. 'username@'...
-     *
-     * @return The user's information
-     */
-    std::experimental::string_view userinfo() const noexcept;
+  ///
+  /// Default assignment operator
+  ///
+  URI& operator=(const URI&) = default;
 
-    /**
-     * @brief Get host.
-     *
-     * E.g. 'includeos.org', '10.0.0.42' etc.
-     *
-     * @return The host's information
-     */
-    std::experimental::string_view host() const noexcept;
+  ///
+  /// Default move assignment operator
+  ///
+  URI& operator=(URI&&) = default;
 
-    /**
-     * @brief Get the raw port number in decimal character representation.
-     *
-     * @return The raw port number as a {std::string}
-     */
-    std::experimental::string_view port_str() const noexcept;
+  ///
+  /// Construct using a view of a string representing a uri
+  ///
+  /// @param uri
+  /// A view of a string representing a uri
+  ///
+  explicit URI(const std::experimental::string_view uri, const bool parse = true);
 
-    /**
-     * @brief Get numeric port number.
-     *
-     * @warning The RFC doesn't specify dimension. This funcion will truncate
-     * any overflowing digits.
-     *
-     * @return The numeric port number as a 16-bit number
-     */
-    uint16_t port() const noexcept;
+  ///////////////////////////////////////////////
+  //----------RFC-specified URI parts----------//
+  ///////////////////////////////////////////////
 
-    /**
-     * @brief Get the path.
-     *
-     * E.g. /pictures/logo.png 
-     *
-     * @return The path information
-     */
-    std::experimental::string_view path() const noexcept;
+  ///
+  /// Get scheme.
+  ///
+  /// @example 'http', 'file', 'ftp' etc.
+  ///
+  /// @return The scheme
+  ///
+  std::experimental::string_view scheme() const noexcept;
 
-    /**
-     * @brief Get the complete unparsed query string.
-     *
-     * @return The complete unparsed query string
-     */
-    std::experimental::string_view query() const noexcept;
+  ///
+  /// Get userinfo.
+  ///
+  /// @example 'username@'...
+  ///
+  /// @return The user's information
+  ///
+  std::experimental::string_view userinfo() const noexcept;
 
-    /**
-     * @brief Get the fragment part.
-     *
-     * E.g. "...#anchor1"
-     *
-     * @return the fragment part
-     */
-    std::experimental::string_view fragment() const noexcept;
+  ///
+  /// Get host.
+  ///
+  /// @example 'includeos.org', '10.0.0.42' etc.
+  ///
+  /// @return The host's information
+  ///
+  std::experimental::string_view host() const noexcept;
 
-    /**
-     * @brief Get the URI-decoded value of a query-string key.
-     *
-     * @param key : The key to find the associated value
-     *
-     * @return The key's associated value
-     *
-     * @example For the query: "?name=Bjarne%20Stroustrup",
-     * query("name") returns "Bjarne Stroustrup"
-     */
-    const std::string& query(const std::string& key);
+  ///
+  /// Get the raw port number in decimal character representation.
+  ///
+  /// @return The raw port number in decimal character representation
+  ///
+  std::experimental::string_view port_str() const noexcept;
 
-    /**
-     * @brief Check to see if an object of this type is valid
-     *
-     * @return true if valid, false otherwise
-     */
-    bool is_valid() const noexcept;
+  ///
+  /// Get numeric port number.
+  ///
+  /// @warning The RFC don't specify dimension. This method will bind
+  /// invalid port numbers to 65535
+  ///
+  /// @return The numeric port number as a 16-bit number
+  ///
+  uint16_t port() const noexcept;
 
-    /**
-     * @brief Convert an object of this type to a boolean value
-     *
-     * @see is_valid
-     *
-     * @return true if valid, false otherwise
-     */
-    operator bool() const noexcept;
+  ///
+  /// Get the path.
+  ///
+  /// @example /pictures/logo.png
+  ///
+  /// @return The path information
+  ///
+  std::experimental::string_view path() const noexcept;
 
-    /**
-     * @brief Get a string representation of this
-     * class
-     *
-     * @return - A string representation
-     */
-    std::string to_string() const;
+  ///
+  /// Get the complete unparsed query string.
+  ///
+  /// @return The complete unparsed query string
+  ///
+  std::experimental::string_view query() const noexcept;
 
-    /**
-     * @brief Operator to transform this class
-     * into string form
-     */
-    operator std::string () const;
+  ///
+  /// Get the fragment part.
+  ///
+  /// @example "...#anchor1"
+  ///
+  /// @return the fragment part
+  ///
+  std::experimental::string_view fragment() const noexcept;
 
-  private:
-    /*
-     * A copy of the data representing a uri
-     */
-    std::string uri_str_;
+  ///
+  /// Get the URI-decoded value of a query-string key.
+  ///
+  /// @param key
+  /// The key to find the associated value
+  ///
+  /// @return The key's associated value
+  ///
+  /// @example For the query: "?name=Bjarne%20Stroustrup",
+  /// query("name") returns "Bjarne Stroustrup"
+  ///
+  std::experimental::string_view query(const std::experimental::string_view key);
 
-    mutable int32_t port_ {-1};
+  ///
+  /// Check to see if an object of this type is valid
+  ///
+  /// @return true if valid, false otherwise
+  ///
+  bool is_valid() const noexcept;
 
-    std::experimental::string_view scheme_;
-    std::experimental::string_view userinfo_;
-    std::experimental::string_view host_;
-    std::experimental::string_view port_str_;
-    std::experimental::string_view path_;
-    std::experimental::string_view query_;
-    std::experimental::string_view fragment_;
+  ///
+  /// Reset the URI object as if it was now default constructed
+  ///
+  /// @return The object that invoked this method
+  ///
+  URI& reset() noexcept;
 
-    std::unordered_map<std::string, std::string> queries_;
+  ///
+  /// Convert an object of this type to a boolean value
+  ///
+  /// @see is_valid
+  ///
+  /// @return true if valid, false otherwise
+  ///
+  operator bool() const noexcept;
 
-    /**
-     * @brief Parse the given string view representing a uri
-     * into its given parts according to RFC 3986
-     */
-    void parse();
+  ///
+  /// Get a string representation of this class
+  ///
+  /// @return A string representation of this class
+  ///
+  std::experimental::string_view to_string() const noexcept;
 
-    /**
-     * @brief Load queries into the map
-     */
-    void load_queries();
+  ///
+  /// Operator to transform this class into string form
+  ///
+  operator std::string () const;
 
-  }; //< class URI
+  ///
+  /// Stream a chunk of new data into the uri for parsing
+  ///
+  /// @param chunk A new set of data to append to uri for parsing
+  ///
+  /// @return The object that invoked this method
+  ///
+  URI& operator << (const std::string& chunk);
 
-  /**
-   * @brief Less-than operator to compare two {URI} objects
-   *
-   * @param lhs : {URI} object to compare
-   * @param rhs : {URI} object to compare
-   *
-   * @return true if lhs is less-than rhs, false otherwise
-   */
-  bool operator < (const URI& lhs, const URI& rhs) noexcept;
+  ///
+  /// Parse the information supplied to the URI object
+  ///
+  /// @return The object that invoked this method
+  ///
+  URI& parse();
+private:
+  ///
+  /// A copy of the data representing a uri
+  ///
+  std::string uri_str_;
 
-  /**
-   * @brief Operator to compare two {URI} objects
-   * for equality
-   *
-   * @param lhs : {URI} object to compare
-   * @param rhs : {URI} object to compare
-   *
-   * @return true if equal, false otherwise
-   */
-  bool operator == (const URI& lhs, const URI& rhs) noexcept;
+  mutable uint16_t port_ {0xFFFF};
 
-  /**
-   * @brief Operator to stream the contents of a {URI}
-   * to the specified output stream device
-   *
-   * @param output_device : The output stream device
-   * @param uri : The {URI} to send to the output stream
-   *
-   * @return A reference to the specified output stream device
-   */
-  std::ostream& operator<< (std::ostream& output_device, const URI& uri);
+  std::experimental::string_view scheme_;
+  std::experimental::string_view userinfo_;
+  std::experimental::string_view host_;
+  std::experimental::string_view port_str_;
+  std::experimental::string_view path_;
+  std::experimental::string_view query_;
+  std::experimental::string_view fragment_;
+
+  std::unordered_map<std::experimental::string_view, std::experimental::string_view> query_map_;
+
+  ///
+  /// Load queries into the map
+  ///
+  void load_queries();
+}; //< class URI
+
+///
+/// Less-than operator to compare two {URI} objects
+///
+/// @param lhs
+/// {URI} object to compare
+///
+/// @param rhs
+/// {URI} object to compare
+///
+/// @return true if lhs is less-than rhs, false otherwise
+///
+bool operator < (const URI& lhs, const URI& rhs) noexcept;
+
+///
+/// Operator to compare two {URI} objects for equality
+///
+/// @param lhs
+/// {URI} object to compare
+///
+/// @param rhs
+/// {URI} object to compare
+///
+/// @return true if equal, false otherwise
+///
+bool operator == (const URI& lhs, const URI& rhs) noexcept;
+
+///
+/// Operator to stream the contents of a {URI} to the specified
+/// output stream device
+///
+/// @param output_device
+/// The output stream device
+///
+/// @param uri
+/// The {URI} to send to the output stream
+///
+/// @return A reference to the specified output stream device
+///
+std::ostream& operator<< (std::ostream& output_device, const URI& uri);
 
 } //< namespace uri
 

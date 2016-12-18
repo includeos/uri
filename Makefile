@@ -19,32 +19,60 @@
 #          IncludeOS LIBRARY makefile           #
 #################################################
 
-# The name of your library
-LIBRARY = liburi.a
+#####################
+# Build Environment #
+#####################
 
-# Your library parts
-FILES = ${wildcard src/*.cpp}
+# C Compiler and Linker
+CC=clang
 
-# Your own include-path
-LOCAL_INCLUDES=-I./include
+# C++ Compiler and Linker
+CXX=clang++
 
-# IncludeOS location
-ifndef INCLUDEOS_INSTALL
-INCLUDEOS_INSTALL=$(HOME)/IncludeOS_install
-endif
+# Compiler Flags
+COMMON=-O3 -Wall -Wextra -Wno-unused-function
+CCFLAGS=-std=c11 ${COMMON}
+CXXFLAGS=-std=c++14 ${COMMON}
 
-# Include the installed seed makefile
-include $(INCLUDEOS_INSTALL)/Makelib
+# Name
+LIBRARY=./lib/liburi.a
 
-lib: ${OBJECTS}
+# Components
+C_SOURCES=./dep/http_parser.c
+CPP_SOURCES=${wildcard src/*.cpp}
+COMPONENTS=${CPP_SOURCES:.cpp=.o}
+COMPONENTS+=${C_SOURCES:.c=.o}
+
+# Interface Files
+INCLUDES=-I./include -I./dep
+
+###############
+# BUILD RULES #
+###############
+
+all: lib test
+
+# Library
+lib: ${COMPONENTS}
 	mkdir -p lib
-	ar -cq $(LIB) ${OBJECTS}
-	ranlib $(LIB)
+	ar -cq ${LIBRARY} ${COMPONENTS}
+	ranlib ${LIBRARY}
 
+# Test Module
 test: test.cpp lib
-	${CXX} ${CXXFLAGS} ${INCLUDES} -o test test.cpp $(LIB)
+	${CXX} ${CXXFLAGS} ${INCLUDES} -o test test.cpp $(LIBRARY)
 
-install:
-	mkdir -p ${INCLUDEOS_INSTALL}/packages/lib/
-	cat include/*.hpp > ${INCLUDEOS_INSTALL}/packages/include/$(NAME)
-	cp -r lib/* ${INCLUDEOS_INSTALL}/packages/lib/
+# Components
+%.o: %.c
+	${CC} ${CCFLAGS} ${INCLUDES} -c $< -o $@
+
+%.o: %.cpp
+	${CXX} ${CXXFLAGS} ${INCLUDES} -c $< -o $@
+
+#################
+# Clean Package #
+#################
+
+clean:
+	${RM} ${COMPONENTS}
+	${RM} test
