@@ -20,19 +20,19 @@
 /// URI encode/decode (percent encoding) module
 ///
 /// Implemented for IncludeOS from RFC 3986
-/// https://tools.ietf.org/html/rfc3986#section-2.1
+///   https://tools.ietf.org/html/rfc3986#section-2.1
 ///
-/// @note Encoding reserved chars:
-/// The RFC lets the application decide which reserved characters to
-/// encode and which can be used as data. This implementation
-/// currently encodes all of them.
+/// @note Encoding reserved chars
+///   The RFC lets the application decide which reserved characters to
+///   encode and which can be used as data. This implementation
+///   currently encodes all of them.
 ///
-/// @note Decoding errors:
-/// The RFC only defines what an URI-encoded string is, not what to do
-/// if you try to decode a non-encoded (or erroneously encoded)
-/// string. Doing that is therefore considered undefined. By default
-/// this implementation will partially decode as much as possible and
-/// return that. To throw on error instead, define URI_THROW_ON_ERROR.
+/// @note Decoding errors
+///   The RFC only defines what an URI-encoded string is, not what to do
+///   if you try to decode a non-encoded (or erroneously encoded)
+///   string. Doing that is therefore considered undefined. By default
+///   this implementation will partially decode as much as possible and
+///   return that. To throw on error instead, define URI_THROW_ON_ERROR.
 ///
 
 #pragma once
@@ -47,13 +47,22 @@ namespace uri {
 ///
 /// Encode (percent-encode) a view of data representing a uri
 ///
+/// @param input
+///   A view of data representing a uri
+///
+/// @return A percent encoded string representation of a uri
+///
 std::string encode(const std::experimental::string_view input);
 
 ///
-/// Decode (percent-encode) a view of data representing a uri
+/// Decode (percent-decode) a view of data representing a uri
+///
+/// @param input
+///   A view of data representing a uri
+///
+/// @return A decoded string representation of a uri
 ///
 std::string decode(const std::experimental::string_view input);
-
 
 #ifdef URI_THROW_ON_ERROR
 #include <stdexcept>

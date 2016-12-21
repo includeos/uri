@@ -78,7 +78,7 @@ public:
   /// Construct using a view of a string representing a uri
   ///
   /// @param uri
-  /// A view of a string representing a uri
+  ///   A view of a string representing a uri
   ///
   explicit URI(const std::experimental::string_view uri, const bool parse = true);
 
@@ -159,7 +159,7 @@ public:
   /// Get the URI-decoded value of a query-string key.
   ///
   /// @param key
-  /// The key to find the associated value
+  ///   The key to find the associated value
   ///
   /// @return The key's associated value
   ///
@@ -206,7 +206,8 @@ public:
   ///
   /// Stream a chunk of new data into the uri for parsing
   ///
-  /// @param chunk A new set of data to append to uri for parsing
+  /// @param chunk
+  ///   A new set of data to append to uri for parsing
   ///
   /// @return The object that invoked this method
   ///
@@ -224,7 +225,7 @@ private:
   ///
   std::string uri_str_;
 
-  mutable uint16_t port_ {0xFFFF};
+  mutable uint16_t port_;
 
   std::experimental::string_view scheme_;
   std::experimental::string_view userinfo_;
@@ -246,10 +247,10 @@ private:
 /// Less-than operator to compare two {URI} objects
 ///
 /// @param lhs
-/// {URI} object to compare
+///   {URI} object to compare
 ///
 /// @param rhs
-/// {URI} object to compare
+///   {URI} object to compare
 ///
 /// @return true if lhs is less-than rhs, false otherwise
 ///
@@ -259,10 +260,10 @@ bool operator < (const URI& lhs, const URI& rhs) noexcept;
 /// Operator to compare two {URI} objects for equality
 ///
 /// @param lhs
-/// {URI} object to compare
+///   {URI} object to compare
 ///
 /// @param rhs
-/// {URI} object to compare
+///   {URI} object to compare
 ///
 /// @return true if equal, false otherwise
 ///
@@ -273,10 +274,10 @@ bool operator == (const URI& lhs, const URI& rhs) noexcept;
 /// output stream device
 ///
 /// @param output_device
-/// The output stream device
+///   The output stream device
 ///
 /// @param uri
-/// The {URI} to send to the output stream
+///   The {URI} to send to the output stream
 ///
 /// @return A reference to the specified output stream device
 ///

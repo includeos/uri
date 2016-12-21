@@ -27,8 +27,20 @@ inline static uint16_t bind_port(const std::experimental::string_view scheme,
 {
   const static std::unordered_map<std::experimental::string_view, uint16_t> port_table
   {
-    {"http", 80U},
-    {"https", 443U}
+    {"ftp",    21U},
+    {"http",   80U},
+    {"https",  443U},
+    {"irc",    6667U},
+    {"ldap",   389U},
+    {"nntp",   119U},
+    {"rtsp",   554U},
+    {"sip",    5060U},
+    {"sips",   5061U},
+    {"smtp",   25U},
+    {"ssh",    22U},
+    {"telnet", 23U},
+    {"ws",     80U},
+    {"xmpp",   5222U}
   };
 
   if (port_from_uri not_eq 0) return port_from_uri;
@@ -168,8 +180,6 @@ void URI::load_queries() {
   std::experimental::string_view value {};
   std::experimental::string_view::size_type base {0U};
   std::experimental::string_view::size_type break_point {};
-
-  _.remove_prefix(_.find_first_not_of(' '));
 
   while (true) {
     if ((break_point = _.find('=')) not_eq std::experimental::string_view::npos) {
